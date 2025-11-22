@@ -2,4 +2,4 @@
 /vendor/
 **.db
 /rule-set/
-/rule-set-unstable/
+main
