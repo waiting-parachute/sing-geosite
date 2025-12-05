@@ -1,53 +1,48 @@
 name: Release
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "5 22 * * *"
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ^1.22
-      - name: Build geosite
+          go-version: ^1.25
+
+      - name: Build rule sets
         id: build
+        env:
+          GOAMD64: v3
         run: |
           go run -v .
+
       - name: Release rule sets
         if: steps.build.outputs.skip != 'true'
-        run: .github/release-rule-set.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate sha256 hash
+        run: |
+          cd rule-set || exit 1
+          git init
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git branch -M rule-set
+          git add .
+          git commit -m "${{ steps.build.outputs.tag }}"
+          git push -f -u origin rule-set
+
+      - name: Purge jsdelivr cache
         if: steps.build.outputs.skip != 'true'
         run: |
-          sha256sum geosite.db > geosite.db.sha256sum
-          sha256sum geosite-cn.db > geosite-cn.db.sha256sum
-      - name: Release release branch
-        if: steps.build.outputs.skip != 'true'
-        run: .github/release-branch.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: dev-drprasad/delete-older-releases@v0.3.2
-        if: steps.build.outputs.skip != 'true'
-        with:
-          keep_latest: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release geosite
-        if: steps.build.outputs.skip != 'true'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.build.outputs.tag }}
-          files: |
-            geosite.db
-            geosite.db.sha256sum
-            geosite-cn.db
-            geosite-cn.db.sha256sum
+          for file in cn geolocation-!cn category-ads-all; do
+            curl -i "https://purge.jsdelivr.net/gh/${{ github.repository }}@rule-set/${file}.srs"
+          done

@@ -1,24 +1,31 @@
 name: Build
+
 on:
   push:
     branches:
       - main
+    paths:
+      - 'main.go'
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Setup Go
+          fetch-depth: 1
+
+      - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ^1.22
-      - name: Build geosite
+          go-version: ^1.25
+
+      - name: Build rule sets
         id: build
         env:
+          GOAMD64: v3
           NO_SKIP: true
         run: |
           go run -v .
