@@ -1,0 +1,23 @@
+{
+	"version": 3,
+	"rules": [
+		{
+			"domain_suffix": [
+				"alog.umeng.com",
+				"alog.umengcloud.com",
+				"cnzz.com",
+				"mobmore.com",
+				"puata.info",
+				"shujupie.com",
+				"umeng.com",
+				"umengcloud.com",
+				"umsns.com",
+				"umtrack.com",
+				"uyunad.com",
+				"w.cnzz.com",
+				"whalecloud.com",
+				"z.gds.cnzz.com"
+			]
+		}
+	]
+}
