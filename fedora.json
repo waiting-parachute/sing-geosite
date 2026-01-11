@@ -1,0 +1,14 @@
+{
+	"version": 3,
+	"rules": [
+		{
+			"domain_suffix": [
+				"fedoraforum.org",
+				"fedoramagazine.org",
+				"fedorapeople.org",
+				"fedoraproject.org",
+				"getfedora.org"
+			]
+		}
+	]
+}
