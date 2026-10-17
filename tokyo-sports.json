@@ -1,0 +1,11 @@
+{
+	"version": 3,
+	"rules": [
+		{
+			"domain_suffix": [
+				"tokyo-sports.co.jp",
+				"tospo-keiba.jp"
+			]
+		}
+	]
+}
